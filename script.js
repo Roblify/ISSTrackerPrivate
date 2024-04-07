@@ -44,52 +44,6 @@ function updateClockTime() {
 
 setInterval(updateClockTime, 1000);
 
-mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ibGlmeSIsImEiOiJjbHU0aXoyb3IxZTk3MmlueTQ4NzJvZjIyIn0.aQWpENes8Dl0k8j6dHs00A';
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [0, 0],
-    zoom: 2
-});
-
-let isLocked = false;
-let updateInterval;
-
-document.getElementById('lockButton').addEventListener('click', function () {
-    isLocked = !isLocked;
-    map.dragPan.disable();
-    map.scrollZoom.disable();
-
-    clearInterval(updateInterval);
-
-    if (isLocked) {
-        map.flyTo({ center: [15, 17], zoom: 1.7 });
-    } else {
-        map.dragPan.enable();
-        map.scrollZoom.enable();
-    }
-});
-
-var issIcon = new mapboxgl.Marker({
-    element: document.createElement('img'),
-    anchor: 'bottom'
-});
-
-issIcon.getElement().src = 'ISS.png';
-issIcon.getElement().style.width = '50px';
-issIcon.getElement().style.height = '50px';
-
-function getCurrentTime() {
-    const now = new Date();
-    return now.toLocaleString() + ' ' + now.toString().match(/\(([A-Za-z\s].*)\)/)[1].split(' ')[0];
-}
-
-function updateClockTime() {
-    document.getElementById("time").textContent = getCurrentTime();
-}
-
-setInterval(updateClockTime, 1000);
-
 function updateISSLocation() {
     $.getJSON('https://api.wheretheiss.at/v1/satellites/25544', function (data) {
         var lat = data['latitude'];
