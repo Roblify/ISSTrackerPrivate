@@ -29,12 +29,50 @@ var issIcon = new mapboxgl.Marker({
     anchor: 'bottom'
 });
 
-var themes = ['mapbox://styles/mapbox/streets-v11', 'mapbox://styles/mapbox/satellite-v9', 'mapbox://styles/mapbox/dark-v10'];
-var currentThemeIndex = 0;
+issIcon.getElement().src = 'ISS.png';
+issIcon.getElement().style.width = '50px';
+issIcon.getElement().style.height = '50px';
 
-document.getElementById('themeButton').addEventListener('click', function () {
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    map.setStyle(themes[currentThemeIndex]);
+function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleString() + ' ' + now.toString().match(/\(([A-Za-z\s].*)\)/)[1].split(' ')[0];
+}
+
+function updateClockTime() {
+    document.getElementById("time").textContent = getCurrentTime();
+}
+
+setInterval(updateClockTime, 1000);
+
+mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ibGlmeSIsImEiOiJjbHU0aXoyb3IxZTk3MmlueTQ4NzJvZjIyIn0.aQWpENes8Dl0k8j6dHs00A';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [0, 0],
+    zoom: 2
+});
+
+let isLocked = false;
+let updateInterval;
+
+document.getElementById('lockButton').addEventListener('click', function () {
+    isLocked = !isLocked;
+    map.dragPan.disable();
+    map.scrollZoom.disable();
+
+    clearInterval(updateInterval);
+
+    if (isLocked) {
+        map.flyTo({ center: [15, 17], zoom: 1.7 });
+    } else {
+        map.dragPan.enable();
+        map.scrollZoom.enable();
+    }
+});
+
+var issIcon = new mapboxgl.Marker({
+    element: document.createElement('img'),
+    anchor: 'bottom'
 });
 
 issIcon.getElement().src = 'ISS.png';
@@ -61,6 +99,12 @@ function updateISSLocation() {
         var visibility = data['visibility'];
         var footprint = data['footprint'];
 
+        if (visibility === 'eclipsed') {
+            map.setStyle('mapbox://styles/mapbox/dark-v10');
+        } else {
+            map.setStyle('mapbox://styles/mapbox/streets-v11');
+        }
+
         issIcon.setLngLat([lon, lat]).addTo(map);
         if (!isLocked) {
             map.flyTo({ center: [lon, lat], zoom: 4 });
@@ -77,5 +121,8 @@ function updateISSLocation() {
     });
     setTimeout(updateISSLocation, 5000);
 }
+
+updateISSLocation();
+
 
 updateISSLocation();
