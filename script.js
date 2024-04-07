@@ -1,7 +1,9 @@
+let mapStyle;
+
 mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ibGlmeSIsImEiOiJjbHU0aXoyb3IxZTk3MmlueTQ4NzJvZjIyIn0.aQWpENes8Dl0k8j6dHs00A';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
+    style: mapStyle || 'mapbox://styles/mapbox/streets-v11',
     center: [0, 0],
     zoom: 2
 });
@@ -54,9 +56,9 @@ function updateISSLocation() {
         var footprint = data['footprint'];
 
         if (visibility === 'eclipsed') {
-            map.setStyle('mapbox://styles/mapbox/dark-v10');
+            mapStyle = map.setStyle('mapbox://styles/mapbox/dark-v10');
         } else {
-            map.setStyle('mapbox://styles/mapbox/streets-v11');
+            mapStyle = map.setStyle('mapbox://styles/mapbox/streets-v11');
         }
 
         issIcon.setLngLat([lon, lat]).addTo(map);
