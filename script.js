@@ -99,11 +99,11 @@ function calculateDistance(lat, lon) {
 var userLat, userLon;
 
 function getLocationByIP() {
-    fetch('https://api.ipgeolocation.io/ipgeo?apiKey=783185ba4210425bb4fe13e4f1763299')
+    fetch('https://ipinfo.io/json?token=59483e0ab3d78e')
         .then(response => response.json())
         .then(data => {
-            userLat = data.latitude;
-            userLon = data.longitude;
+            userLat = data.loc.split(',')[0];
+            userLon = data.loc.split(',')[1];
             var distance = calculateDistance(userLat, userLon);
             document.getElementById('distance').textContent = distance.toFixed(2) + ' km (' + (distance * 0.621371).toFixed(2) + ' mi)';
         })
