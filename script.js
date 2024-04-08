@@ -100,7 +100,12 @@ var userLat, userLon;
 
 function getLocationByIP() {
     fetch('https://ipinfo.io/json?token=59483e0ab3d78e')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch IP location');
+            }
+            return response.json();
+        })
         .then(data => {
             userLat = data.loc.split(',')[0];
             userLon = data.loc.split(',')[1];
