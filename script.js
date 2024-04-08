@@ -98,22 +98,21 @@ function calculateDistance(lat, lon) {
 
 var userLat, userLon;
 
-function getUserLocation() {
-    return fetch('https://ipapi.co/json/')
+function getLocationByIP() {
+    fetch('https://api.ipgeolocation.io/ipgeo?apiKey=783185ba4210425bb4fe13e4f1763299')
         .then(response => response.json())
         .then(data => {
             userLat = data.latitude;
             userLon = data.longitude;
-        });
+            var distance = calculateDistance(userLat, userLon);
+            document.getElementById('distance').textContent = distance.toFixed(2) + ' km (' + (distance * 0.621371).toFixed(2) + ' mi)';
+        })
+        .catch(error => console.error('Error fetching location:', error));
 }
 
 document.getElementById('distanceButton').addEventListener('click', function () {
     if (confirm("Would you like to calculate the distance from the ISS to your location? This will fetch your IP address for the calculation. If you're concerned about privacy, please head to the following: https://github.com/Roblify/ISS-Tracker-Project-Open-Source/blob/main/README.md")) {
-        getUserLocation()
-            .then(() => {
-                var distance = calculateDistance(userLat, userLon);
-                document.getElementById('distance').textContent = distance.toFixed(2) + ' km (' + (distance * 0.621371).toFixed(2) + ' mi)';
-            });
+        getLocationByIP();
     }
 });
 
