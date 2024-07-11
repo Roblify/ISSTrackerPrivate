@@ -1,5 +1,3 @@
-let mapStyle;
-
 mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ibGlmeSIsImEiOiJjbHU0aXoyb3IxZTk3MmlueTQ4NzJvZjIyIn0.aQWpENes8Dl0k8j6dHs00A';
 var map = new mapboxgl.Map({
     container: 'map',
@@ -61,7 +59,7 @@ function updateISSLocation() {
 
         var distance = calculateDistance(lat, lon);
 
-        if (visibility === 'eclipsed') {
+        if (visibility === 'visible') {
             mapStyle = map.setStyle('mapbox://styles/mapbox/dark-v10');
         } else {
             mapStyle = map.setStyle('mapbox://styles/mapbox/streets-v11');
@@ -86,7 +84,7 @@ function updateISSLocation() {
             document.getElementById('distance').textContent = 'DISABLED';
         }
     });
-    setTimeout(updateISSLocation, 5000);
+    setTimeout(updateISSLocation, 1200);
 }
 
 var disableDistance = true;
