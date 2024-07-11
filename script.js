@@ -1,4 +1,4 @@
-let mapStyle; //
+let mapStyle;
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoicm9ibGlmeSIsImEiOiJjbHU0aXoyb3IxZTk3MmlueTQ4NzJvZjIyIn0.aQWpENes8Dl0k8j6dHs00A';
 var map = new mapboxgl.Map({
@@ -34,6 +34,15 @@ var issIcon = new mapboxgl.Marker({
 issIcon.getElement().src = 'ISS.png';
 issIcon.getElement().style.width = '50px';
 issIcon.getElement().style.height = '50px';
+
+var hubbleIcon = new mapboxgl.Marker({
+    element: document.createElement('img'),
+    anchor: 'bottom'
+});
+
+hubbleIcon.getElement().src = 'Hubble.png';
+hubbleIcon.getElement().style.width = '50px';
+hubbleIcon.getElement().style.height = '50px';
 
 function getCurrentTime() {
     const now = new Date();
@@ -134,4 +143,19 @@ function deg2rad(deg) {
     return deg * (Math.PI / 180)
 }
 
+function updateHubbleLocation() {
+    fetch('https://api.n2yo.com/rest/v1/satellite/positions/20580/0/0/0/2/&apiKey=WRRMQU-3WR647-S9JMQ6-5A6Y')
+        .then(response => response.json())
+        .then(data => {
+            var positions = data.positions[0];
+            var lat = positions.satlatitude;
+            var lon = positions.satlongitude;
+
+            hubbleIcon.setLngLat([lon, lat]).addTo(map);
+        })
+        .catch(error => console.error('Error fetching Hubble data:', error));
+    setTimeout(updateHubbleLocation, 1200);
+}
+
+updateHubbleLocation();
 updateISSLocation();
