@@ -10,7 +10,7 @@ var map = new mapboxgl.Map({
 
 let isLocked = false;
 let updateInterval;
-let updateFrequency = 1000; // default to 1 second
+let updateFrequency = 1000;
 
 document.getElementById('lockButton').addEventListener('click', function () {
     isLocked = !isLocked;
