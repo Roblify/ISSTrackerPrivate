@@ -10,6 +10,7 @@ var map = new mapboxgl.Map({
 
 let isLocked = false;
 let updateInterval;
+let updateFrequency = 1000; // default to 1 second
 
 document.getElementById('lockButton').addEventListener('click', function () {
     isLocked = !isLocked;
@@ -34,15 +35,6 @@ var issIcon = new mapboxgl.Marker({
 issIcon.getElement().src = 'ISS.png';
 issIcon.getElement().style.width = '50px';
 issIcon.getElement().style.height = '50px';
-
-var hubbleIcon = new mapboxgl.Marker({
-    element: document.createElement('img'),
-    anchor: 'bottom'
-});
-
-hubbleIcon.getElement().src = 'Hubble.png';
-hubbleIcon.getElement().style.width = '50px';
-hubbleIcon.getElement().style.height = '50px';
 
 function getCurrentTime() {
     const now = new Date();
@@ -88,14 +80,14 @@ function updateISSLocation() {
         document.getElementById('visibility').textContent = visibility;
         document.getElementById('footprint').textContent = numberWithCommas(footprint.toFixed(2)) + ' km² (' + numberWithCommas((footprint * 0.386102).toFixed(2)) + ' mi²)';
         document.getElementById('distance').textContent = numberWithCommas(distance.toFixed(2)) + ' km (' + numberWithCommas((distance * 0.621371).toFixed(2)) + ' mi)';
-    
+
         if (!disableDistance) {
             document.getElementById('footprint').textContent = numberWithCommas(footprint.toFixed(2)) + ' km² (' + numberWithCommas((footprint * 0.386102).toFixed(2)) + ' mi²)';
         } else {
             document.getElementById('distance').textContent = 'DISABLED';
         }
     });
-    setTimeout(updateISSLocation, 1200);
+    updateInterval = setTimeout(updateISSLocation, updateFrequency);
 }
 
 var disableDistance = true;
@@ -113,6 +105,11 @@ function calculateDistance(lat, lon) {
     return d;
 }
 
+// Add the deg2rad function
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
 var userLat, userLon;
 
 function getLocationByIP() {
@@ -128,34 +125,38 @@ function getLocationByIP() {
 }
 
 document.getElementById('distanceButton').addEventListener('click', function () {
-    if (confirm("Would you like to calculate the distance from the ISS to your location? This will fetch your IP address for the calculation. If you're concerned about privacy, please head to the following: https://github.com/Roblify/ISS-Tracker-Project-Open-Source/blob/main/README.md")) {
-        getLocationByIP();
+    if (confirm("Would you like to enable distance tracking?")) {
         disableDistance = false;
     }
 });
 
-document.getElementById('disableDistance').addEventListener('click', function ()  {
-    disableDistance = true;
-    document.getElementById('distance').textContent = 'DISABLED';
+document.getElementById('disableDistance').addEventListener('click', function () {
+    if (confirm("Would you like to disable distance tracking?")) {
+        disableDistance = true;
+        document.getElementById('distance').textContent = 'DISABLED';
+    }
 });
 
-function deg2rad(deg) {
-    return deg * (Math.PI / 180)
-}
-
-function updateHubbleLocation() {
-    fetch('https://api.n2yo.com/rest/v1/satellite/positions/20580/0/0/0/2/&apiKey=WRRMQU-3WR647-S9JMQ6-5A6Y')
-        .then(response => response.json())
-        .then(data => {
-            var positions = data.positions[0];
-            var lat = positions.satlatitude;
-            var lon = positions.satlongitude;
-
-            hubbleIcon.setLngLat([lon, lat]).addTo(map);
-        })
-        .catch(error => console.error('Error fetching Hubble data:', error));
-    setTimeout(updateHubbleLocation, 1200);
-}
-
-updateHubbleLocation();
+getLocationByIP();
 updateISSLocation();
+
+function changeUpdateFrequency(newFrequency) {
+    clearTimeout(updateInterval);
+    updateFrequency = newFrequency;
+    updateISSLocation();
+}
+
+document.getElementById('interval1').addEventListener('click', function() {
+    changeUpdateFrequency(1000);
+    document.getElementById('bottomText').textContent = 'Tracker updates every 1 second';
+});
+
+document.getElementById('interval5').addEventListener('click', function() {
+    changeUpdateFrequency(5000);
+    document.getElementById('bottomText').textContent = 'Tracker updates every 5 seconds';
+});
+
+document.getElementById('interval10').addEventListener('click', function() {
+    changeUpdateFrequency(10000);
+    document.getElementById('bottomText').textContent = 'Tracker updates every 10 seconds';
+});
