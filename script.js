@@ -38,7 +38,11 @@ issIcon.getElement().style.height = '50px';
 
 function getCurrentTime() {
     const now = new Date();
-    return now.toLocaleString() + ' ' + now.toString().match(/\(([A-Za-z\s].*)\)/)[1].split(' ')[0];
+    const locale = navigator.language;
+    const date = now.toLocaleDateString(locale);
+    const time = now.toLocaleTimeString(locale);
+    const timezone = now.toString().match(/\(([A-Za-z\s].*)\)/)[1].split(' ')[0];
+    return `${date} ${time} ${timezone}`;
 }
 
 function updateClockTime() {
