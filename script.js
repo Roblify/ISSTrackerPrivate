@@ -105,7 +105,6 @@ function calculateDistance(lat, lon) {
     return d;
 }
 
-// Add the deg2rad function
 function deg2rad(deg) {
     return deg * (Math.PI / 180);
 }
